@@ -7,6 +7,7 @@ SoundFile currentSong;
 boolean isPlaying;
 int NUM_BANDS = 32;
 float d;
+float spin = 0;
 
 void setup()
 {
@@ -19,13 +20,25 @@ void setup()
 
 void draw()
 {
-  background(30,30,120,220);
+  background(30, 30, 120, 220);
   fft.input(currentSong);
   fft.analyze();  
   playPause();
   translate(width/2, height/2, 0);
-  rotateX(radians(-mouseY/5));
-  rotateZ(radians(mouseX/4));
+  rotateX(radians(70));
+  if (isPlaying) {
+    if (currentSong == SongOne) {
+      rotateZ(radians(spin = 2.5 + spin));
+    }
+    if (currentSong == SongTwo) {
+      rotateZ(radians(spin = .7 + spin));
+    }
+    if (currentSong == SongThree) {
+      rotateZ(radians(spin = 3.5 + spin));
+    } else
+      rotateZ(radians(spin));
+  }
+  println(spin);
   translate(-200, -200, 0);
   visualizer();
 }
@@ -97,18 +110,20 @@ void playPause() {
   text("Current Song: " + currentSongMeta, 10, height - 20);
 }
 
+void nowPlaying() {
+}
+
 void visualizer() {
   stroke(0, 255, 255);
   fill(0, 200, 200);
   lights();
-  for (int m=0; m<fft.spectrum.length; m=m+1)
+  for (int m=0; m<fft.spectrum.length*0.4; m=m+1)
   {
     for (float i=0; i<400; i = i + 20) {
       for (float j=0; j<400; j = j + 20) {
-        //d = map(fft.spectrum[m], -0.001, 1, 1, 150);
         pushMatrix();
-        translate(i, j, 0);
-        box(15, 15, map(fft.spectrum[m]*0.4, -0.001, 1, 1, 150));
+        translate(i, j, fft.spectrum[m]);
+        box(15, 15, map(fft.spectrum[m], -0.001, 1, 1, 150));
         popMatrix();
       }
     }
